@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+@theme {
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Fira Code", Consolas, monospace;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* Cybersecurity palette */
+  --color-void: #05070d;
+  --color-abyss: #080c16;
+  --color-panel: #0b1120;
+  --color-panel-2: #0f1729;
+
+  --color-pass: #22d3ee;      /* cyan   — password */
+  --color-pass-dim: #0e7490;
+  --color-salt: #f472b6;      /* pink   — salt */
+  --color-salt-dim: #9d174d;
+
+  --color-signal: #34d399;    /* emerald — filled / success */
+  --color-warn: #fbbf24;      /* amber   — computing */
+  --color-ref: #a78bfa;       /* violet  — reference block */
+  --color-danger: #fb7185;    /* rose    — avalanche / alerts */
+
+  --color-grid-line: #16213a;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-void);
+  color: #e2e8f0;
+  font-family: var(--font-sans);
+  overflow: hidden;
+  background-image:
+    radial-gradient(circle at 15% 0%, rgba(34, 211, 238, 0.07), transparent 40%),
+    radial-gradient(circle at 85% 100%, rgba(244, 114, 182, 0.06), transparent 40%),
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: auto, auto, 28px 28px, 28px 28px;
+}
+
+::selection {
+  background: rgba(34, 211, 238, 0.35);
+  color: white;
+}
+
+/* Slim, themed scrollbars for the internal scroll panes */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #1e293b transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: #1e293b;
+  border-radius: 9999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #334155;
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+@keyframes flash-fill {
+  0% { transform: scale(1.35); filter: brightness(2); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+.animate-flash-fill {
+  animation: flash-fill 380ms ease-out;
+}
+
+@keyframes border-glow {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(251, 113, 133, 0.4), 0 0 18px rgba(251, 113, 133, 0.35); }
+  50% { box-shadow: 0 0 0 1px rgba(251, 113, 133, 0.9), 0 0 30px rgba(251, 113, 133, 0.65); }
+}
+.animate-border-glow {
+  animation: border-glow 1.8s ease-in-out infinite;
+}
