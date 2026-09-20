@@ -1,4 +1,3 @@
-import { Boxes } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ComparisonPanel } from './components/ComparisonPanel.tsx';
 import { ExplanationPanel } from './components/ExplanationPanel.tsx';
@@ -7,8 +6,9 @@ import { MemoryGrid } from './components/MemoryGrid.tsx';
 import { ParamControls } from './components/ParamControls.tsx';
 import { useArgon2Trace } from './hooks/useArgon2Trace.ts';
 import { usePlayback } from './hooks/usePlayback.ts';
+import { useTheme } from './hooks/useTheme.ts';
 import { toHex, type TraceStep } from './lib/argon2.ts';
-import { estimateArgon2Ms, formatMs } from './lib/costModel.ts';
+import { estimateArgon2Ms } from './lib/costModel.ts';
 import { computeGridSnapshot } from './lib/gridSnapshot.ts';
 
 const DEFAULTS = {
@@ -30,7 +30,8 @@ export default function App() {
   const [t, setT] = useState(DEFAULTS.t);
   const [p, setP] = useState(DEFAULTS.p);
 
-  const { trace, layout, computeMs } = useArgon2Trace({ password, salt, m, t, p });
+  const { trace, layout } = useArgon2Trace({ password, salt, m, t, p });
+  const { theme, toggle: toggleTheme } = useTheme();
   const {
     stepIndex, isPlaying, speed, setSpeed, play, pause, stepForward, stepBack, reset, goTo,
   } = usePlayback(trace.length);
@@ -110,7 +111,7 @@ export default function App() {
   }, [trace, stepIndex, goTo]);
 
   return (
-    <div className="flex h-screen w-screen flex-col overflow-hidden bg-void text-slate-200">
+    <div className="flex h-screen w-screen flex-col overflow-hidden bg-bg text-ink">
       <Header
         password={password}
         salt={salt}
@@ -119,19 +120,15 @@ export default function App() {
         elapsedMs={elapsedMs}
         totalMs={totalSimMs}
         isPlaying={isPlaying}
+        theme={theme}
+        onToggleTheme={toggleTheme}
       />
 
       <ComparisonPanel mPrime={layout.mPrime} t={t} p={p} />
 
-      <main className="flex min-h-0 flex-1 gap-3 p-3">
-        <section className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 rounded-lg border border-slate-800/80 bg-slate-950/40 p-3">
-          <div className="flex shrink-0 items-center gap-2 text-slate-300">
-            <Boxes size={15} className="text-cyan-400" />
-            <h2 className="text-xs font-semibold uppercase tracking-wide">Matrice mémoire</h2>
-            <span className="font-mono text-[10px] font-normal normal-case text-slate-600">
-              moteur Argon2id réel — calculé en {formatMs(computeMs)} dans ce navigateur
-            </span>
-          </div>
+      <main className="flex min-h-0 flex-1 gap-4 p-4">
+        <section className="flex min-h-0 min-w-0 flex-[1.6] flex-col gap-4 rounded-2xl border border-edge bg-surface p-6">
+          <h2 className="shrink-0 text-lg font-medium text-ink-muted">Matrice mémoire</h2>
           <MemoryGrid
             snapshot={snapshot}
             p={effectiveP}
@@ -142,7 +139,7 @@ export default function App() {
           />
         </section>
 
-        <aside className="flex w-[420px] shrink-0 flex-col">
+        <aside className="flex w-[440px] shrink-0 flex-col">
           <ExplanationPanel
             step={snapshot.currentStep}
             stepIndex={stepIndex}

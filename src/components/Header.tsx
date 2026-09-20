@@ -1,4 +1,6 @@
-import { Hash, KeyRound, ShieldHalf } from 'lucide-react';
+import { KeyRound, ShieldHalf } from 'lucide-react';
+import type { CSSProperties, ReactNode } from 'react';
+import { ThemeToggle } from './ThemeToggle.tsx';
 import { Timer } from './Timer.tsx';
 
 interface HeaderProps {
@@ -9,54 +11,62 @@ interface HeaderProps {
   elapsedMs: number;
   totalMs: number;
   isPlaying: boolean;
+  theme: 'light' | 'dark';
+  onToggleTheme: () => void;
 }
 
 export function Header({
-  password, salt, onPasswordChange, onSaltChange, elapsedMs, totalMs, isPlaying,
+  password, salt, onPasswordChange, onSaltChange, elapsedMs, totalMs, isPlaying, theme, onToggleTheme,
 }: HeaderProps) {
   return (
-    <header className="flex items-center gap-4 border-b border-slate-800/80 bg-black/30 px-4 py-2.5">
-      <div className="flex items-center gap-2 pr-2">
-        <ShieldHalf className="text-cyan-400" size={22} />
-        <div className="leading-tight">
-          <h1 className="text-sm font-semibold tracking-wide text-slate-100">Argon2id</h1>
-          <p className="text-[10px] text-slate-500">démonstrateur interactif</p>
-        </div>
+    <header className="flex items-center gap-6 border-b border-edge px-6 py-4">
+      <div className="flex items-center gap-2.5">
+        <ShieldHalf className="text-pass" size={26} strokeWidth={2} />
+        <h1 className="text-xl font-semibold tracking-tight">Argon2id</h1>
       </div>
 
-      <div className="h-8 w-px bg-slate-800" />
-
-      <label className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-cyan-500/25 bg-cyan-400/5 px-3 py-1.5 focus-within:border-cyan-400/70 focus-within:bg-cyan-400/10">
-        <KeyRound size={15} className="shrink-0 text-cyan-400" />
-        <span className="shrink-0 text-[10px] font-medium uppercase tracking-wide text-cyan-300/80">
-          Mot de passe
-        </span>
-        <input
+      <div className="flex min-w-0 flex-1 items-center gap-4">
+        <Field
+          label="Mot de passe"
           value={password}
-          onChange={(e) => onPasswordChange(e.target.value)}
-          spellCheck={false}
-          autoComplete="off"
-          placeholder="(vide autorisé)"
-          className="w-full min-w-0 bg-transparent font-mono text-sm text-cyan-100 placeholder:text-cyan-100/30 focus:outline-none"
+          onChange={onPasswordChange}
+          icon={<KeyRound size={17} />}
+          accent="pass"
         />
-      </label>
-
-      <label className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-pink-500/25 bg-pink-400/5 px-3 py-1.5 focus-within:border-pink-400/70 focus-within:bg-pink-400/10">
-        <Hash size={15} className="shrink-0 text-pink-400" />
-        <span className="shrink-0 text-[10px] font-medium uppercase tracking-wide text-pink-300/80">
-          Sel
-        </span>
-        <input
+        <Field
+          label="Sel"
           value={salt}
-          onChange={(e) => onSaltChange(e.target.value)}
-          spellCheck={false}
-          autoComplete="off"
-          placeholder="(vide autorisé)"
-          className="w-full min-w-0 bg-transparent font-mono text-sm text-pink-100 placeholder:text-pink-100/30 focus:outline-none"
+          onChange={onSaltChange}
+          icon={<span className="text-[17px] font-semibold leading-none">#</span>}
+          accent="salt"
         />
-      </label>
+      </div>
 
       <Timer elapsedMs={elapsedMs} totalMs={totalMs} isPlaying={isPlaying} />
+      <ThemeToggle theme={theme} onToggle={onToggleTheme} />
     </header>
+  );
+}
+
+function Field({
+  label, value, onChange, icon, accent,
+}: {
+  label: string; value: string; onChange: (v: string) => void; icon: ReactNode; accent: 'pass' | 'salt';
+}) {
+  return (
+    <label className="flex min-w-0 flex-1 items-center gap-3 rounded-xl border border-edge bg-surface px-4 py-2.5 transition-colors focus-within:border-[--c] has-[input:focus]:border-[--c]"
+      style={{ '--c': accent === 'pass' ? 'var(--pass)' : 'var(--salt)' } as CSSProperties}
+    >
+      <span className={accent === 'pass' ? 'text-pass' : 'text-salt'}>{icon}</span>
+      <span className="shrink-0 text-sm font-medium text-ink-muted">{label}</span>
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        spellCheck={false}
+        autoComplete="off"
+        placeholder="vide autorisé"
+        className="w-full min-w-0 bg-transparent font-mono text-lg text-ink placeholder:text-ink-muted/50 focus:outline-none"
+      />
+    </label>
   );
 }

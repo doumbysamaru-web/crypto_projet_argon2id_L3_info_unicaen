@@ -7,28 +7,20 @@ export function Timer({
   const progress = totalMs > 0 ? Math.min(1, elapsedMs / totalMs) : 0;
 
   return (
-    <div className="flex flex-col gap-1 rounded-lg border border-slate-800 bg-black/40 px-3 py-1.5 min-w-[168px]">
-      <div className="flex items-center gap-2">
-        <TimerIcon
-          size={16}
-          className={isPlaying ? 'text-emerald-400 animate-pulse' : 'text-slate-500'}
-        />
-        <span className="font-mono text-lg tabular-nums leading-none text-emerald-300">
-          {formatMs(elapsedMs)}
-        </span>
-        <span className="font-mono text-[11px] text-slate-500 leading-none">
-          / {formatMs(totalMs)}
-        </span>
+    <div className="hidden shrink-0 items-center gap-3 md:flex">
+      <TimerIcon size={20} className={isPlaying ? 'text-signal' : 'text-ink-muted'} />
+      <div className="w-40">
+        <div className="flex items-baseline gap-1.5 font-mono">
+          <span className="text-lg font-semibold tabular-nums text-ink">{formatMs(elapsedMs)}</span>
+          <span className="text-sm text-ink-muted">/ {formatMs(totalMs)}</span>
+        </div>
+        <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-surface-2">
+          <div
+            className="h-full rounded-full bg-signal transition-[width] duration-150 ease-linear"
+            style={{ width: `${progress * 100}%` }}
+          />
+        </div>
       </div>
-      <div className="h-1 w-full overflow-hidden rounded-full bg-slate-800">
-        <div
-          className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-emerald-400 transition-[width] duration-150 ease-linear"
-          style={{ width: `${progress * 100}%` }}
-        />
-      </div>
-      <span className="text-[9px] uppercase tracking-wide text-slate-600">
-        Temps simulé (estimation pédagogique)
-      </span>
     </div>
   );
 }

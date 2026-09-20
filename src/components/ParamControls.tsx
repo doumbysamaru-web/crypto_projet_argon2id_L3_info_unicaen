@@ -1,6 +1,7 @@
 import {
   Pause, Play, RotateCcw, StepBack, StepForward,
 } from 'lucide-react';
+import type { ReactNode } from 'react';
 import type { Argon2Layout } from '../lib/argon2.ts';
 
 interface ParamControlsProps {
@@ -29,16 +30,16 @@ const P_MAX = 8;
 const SPEEDS = [0.5, 1, 2, 4];
 
 function Slider({
-  label, value, min, max, step, onChange, accent, suffix, hint,
+  label, value, min, max, step, onChange, accent, suffix,
 }: {
   label: string; value: number; min: number; max: number; step: number;
-  onChange: (v: number) => void; accent: string; suffix: string; hint: string;
+  onChange: (v: number) => void; accent: string; suffix: string;
 }) {
   return (
-    <div className="flex-1 min-w-[150px]">
-      <div className="mb-1 flex items-baseline justify-between">
-        <span className="text-[10px] font-medium uppercase tracking-wide text-slate-400">{label}</span>
-        <span className={`font-mono text-sm font-semibold ${accent}`}>{value}{suffix}</span>
+    <div className="flex-1 min-w-[180px]">
+      <div className="mb-2 flex items-baseline justify-between">
+        <span className="text-sm font-medium text-ink-muted">{label}</span>
+        <span className="font-mono text-2xl font-semibold" style={{ color: accent }}>{value}{suffix}</span>
       </div>
       <input
         type="range"
@@ -47,13 +48,9 @@ function Slider({
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className={`h-1.5 w-full cursor-pointer appearance-none rounded-full bg-slate-800 ${accent}`}
-        style={{ accentColor: 'currentColor' }}
+        className="h-2 w-full cursor-pointer appearance-none rounded-full bg-surface-2"
+        style={{ accentColor: accent }}
       />
-      <div className="flex justify-between">
-        <span className="text-[9px] text-slate-600">{hint}</span>
-        <span className="text-[9px] text-slate-600">max {max}{suffix}</span>
-      </div>
     </div>
   );
 }
@@ -67,82 +64,48 @@ export function ParamControls({
   const mMin = 4 * p;
 
   return (
-    <footer className="flex flex-wrap items-center gap-5 border-t border-slate-800/80 bg-black/30 px-4 py-2.5">
-      <div className="flex flex-1 flex-wrap items-center gap-5 min-w-[420px]">
-        <Slider
-          label="Mémoire (m)" value={m} min={mMin} max={M_MAX} step={mStep}
-          onChange={onChangeM} accent="text-cyan-300" suffix=" Ko"
-          hint={`grille ${p}×${layout.laneLength}`}
-        />
-        <Slider
-          label="Itérations (t)" value={t} min={1} max={T_MAX} step={1}
-          onChange={onChangeT} accent="text-emerald-300" suffix=" passes"
-          hint="passes sur la mémoire"
-        />
-        <Slider
-          label="Parallélisme (p)" value={p} min={1} max={P_MAX} step={1}
-          onChange={onChangeP} accent="text-violet-300" suffix=" lanes"
-          hint="lignes de la grille"
-        />
+    <footer className="flex flex-wrap items-center gap-8 border-t border-edge px-6 py-5">
+      <div className="flex flex-1 flex-wrap items-center gap-8 min-w-[480px]">
+        <Slider label="Mémoire (m)" value={m} min={mMin} max={M_MAX} step={mStep} onChange={onChangeM} accent="var(--pass)" suffix=" Ko" />
+        <Slider label="Itérations (t)" value={t} min={1} max={T_MAX} step={1} onChange={onChangeT} accent="var(--signal)" suffix="" />
+        <Slider label="Parallélisme (p)" value={p} min={1} max={P_MAX} step={1} onChange={onChangeP} accent="var(--ref)" suffix="" />
+        <p className="hidden shrink-0 font-mono text-sm text-ink-muted lg:block">grille {p}×{layout.laneLength}</p>
       </div>
 
-      <div className="h-9 w-px bg-slate-800" />
-
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-950/60 p-1">
-          <button
-            type="button"
-            onClick={onReset}
-            title="Réinitialiser"
-            className="rounded-md p-1.5 text-slate-400 hover:bg-slate-800 hover:text-slate-100"
-          >
-            <RotateCcw size={16} />
-          </button>
-          <button
-            type="button"
-            onClick={onStepBack}
-            title="Étape précédente"
-            className="rounded-md p-1.5 text-slate-400 hover:bg-slate-800 hover:text-slate-100"
-          >
-            <StepBack size={16} />
-          </button>
+      <div className="flex items-center gap-5">
+        <div className="flex items-center gap-1.5 rounded-full border border-edge bg-surface p-1.5">
+          <IconButton title="Réinitialiser" onClick={onReset}><RotateCcw size={20} /></IconButton>
+          <IconButton title="Étape précédente" onClick={onStepBack}><StepBack size={20} /></IconButton>
           {isPlaying ? (
             <button
               type="button"
               onClick={onPause}
               title="Pause"
-              className="rounded-md bg-cyan-500/90 p-1.5 text-slate-950 hover:bg-cyan-400"
+              className="rounded-full bg-ink p-2.5 text-bg transition-opacity hover:opacity-90"
             >
-              <Pause size={16} />
+              <Pause size={20} />
             </button>
           ) : (
             <button
               type="button"
               onClick={onPlay}
               title="Lecture"
-              className="rounded-md bg-emerald-500/90 p-1.5 text-slate-950 hover:bg-emerald-400"
+              className="rounded-full bg-signal p-2.5 text-bg transition-opacity hover:opacity-90"
             >
-              <Play size={16} />
+              <Play size={20} />
             </button>
           )}
-          <button
-            type="button"
-            onClick={onStepForward}
-            title="Étape suivante"
-            className="rounded-md p-1.5 text-slate-400 hover:bg-slate-800 hover:text-slate-100"
-          >
-            <StepForward size={16} />
-          </button>
+          <IconButton title="Étape suivante" onClick={onStepForward}><StepForward size={20} /></IconButton>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5 rounded-full border border-edge p-1">
           {SPEEDS.map((s) => (
             <button
               key={s}
               type="button"
               onClick={() => onSpeedChange(s)}
-              className={`rounded px-1.5 py-1 font-mono text-[11px] ${
-                speed === s ? 'bg-slate-100 text-slate-900' : 'text-slate-500 hover:text-slate-200'
+              className={`rounded-full px-3 py-1.5 font-mono text-sm transition-colors ${
+                speed === s ? 'bg-ink text-bg' : 'text-ink-muted hover:text-ink'
               }`}
             >
               {s}×
@@ -150,10 +113,25 @@ export function ParamControls({
           ))}
         </div>
 
-        <span className="font-mono text-[10px] text-slate-600 tabular-nums">
-          étape {Math.min(stepIndex + 1, totalSteps)}/{totalSteps}
+        <span className="font-mono text-sm text-ink-muted tabular-nums">
+          {Math.min(stepIndex + 1, totalSteps)} / {totalSteps}
         </span>
       </div>
     </footer>
+  );
+}
+
+function IconButton({
+  title, onClick, children,
+}: { title: string; onClick: () => void; children: ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      title={title}
+      className="rounded-full p-2.5 text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink"
+    >
+      {children}
+    </button>
   );
 }
