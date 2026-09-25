@@ -16,6 +16,7 @@ interface Inputs {
   m: number;
   t: number;
   p: number;
+  tagLength: number;
 }
 
 const encoder = new TextEncoder();
@@ -29,7 +30,7 @@ export function useArgon2Trace(inputs: Inputs, debounceMs = 200): TraceResult {
     const id = setTimeout(() => setDebounced(inputs), debounceMs);
     return () => clearTimeout(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inputs.password, inputs.salt, inputs.m, inputs.t, inputs.p, debounceMs]);
+  }, [inputs.password, inputs.salt, inputs.m, inputs.t, inputs.p, inputs.tagLength, debounceMs]);
 
   const result = useMemo(() => {
     const layout = computeLayout(debounced.m, debounced.p);
@@ -41,12 +42,12 @@ export function useArgon2Trace(inputs: Inputs, debounceMs = 200): TraceResult {
       t: debounced.t,
       p: debounced.p,
       type: 2,
-      tagLength: 32,
+      tagLength: debounced.tagLength,
     });
     const computeMs = performance.now() - start;
     return { trace, layout, computeMs };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debounced.password, debounced.salt, debounced.m, debounced.t, debounced.p]);
+  }, [debounced.password, debounced.salt, debounced.m, debounced.t, debounced.p, debounced.tagLength]);
 
   useEffect(() => {
     setIsPending(false);

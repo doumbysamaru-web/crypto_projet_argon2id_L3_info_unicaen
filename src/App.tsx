@@ -10,13 +10,14 @@ import { useTheme } from './hooks/useTheme.ts';
 import { toHex, type TraceStep } from './lib/argon2.ts';
 import { estimateArgon2Ms } from './lib/costModel.ts';
 import { computeGridSnapshot } from './lib/gridSnapshot.ts';
+import { generateRandomSaltHex } from './lib/randomSalt.ts';
 
 const DEFAULTS = {
   password: 'MotDePasse!42',
-  salt: 'SelDeDemo2024',
   m: 256,
   t: 3,
   p: 4,
+  tagLength: 32 as 32 | 64,
 };
 
 function initHexesOf(trace: TraceStep[]): string[] {
@@ -25,12 +26,14 @@ function initHexesOf(trace: TraceStep[]): string[] {
 
 export default function App() {
   const [password, setPassword] = useState(DEFAULTS.password);
-  const [salt, setSalt] = useState(DEFAULTS.salt);
+  const [salt, setSalt] = useState(() => generateRandomSaltHex());
+  const [saltAuto, setSaltAuto] = useState(true);
   const [m, setM] = useState(DEFAULTS.m);
   const [t, setT] = useState(DEFAULTS.t);
   const [p, setP] = useState(DEFAULTS.p);
+  const [tagLength, setTagLength] = useState<32 | 64>(DEFAULTS.tagLength);
 
-  const { trace, layout } = useArgon2Trace({ password, salt, m, t, p });
+  const { trace, layout } = useArgon2Trace({ password, salt, m, t, p, tagLength });
   const { theme, toggle: toggleTheme } = useTheme();
   const {
     stepIndex, isPlaying, speed, setSpeed, play, pause, stepForward, stepBack, reset, goTo,
@@ -88,6 +91,21 @@ export default function App() {
     return () => window.clearTimeout(id);
   }, [flash]);
 
+  const handlePasswordChange = useCallback((v: string) => {
+    setPassword(v);
+    if (saltAuto) setSalt(generateRandomSaltHex());
+  }, [saltAuto]);
+
+  const handleSaltChange = useCallback((v: string) => {
+    setSalt(v);
+    setSaltAuto(false);
+  }, []);
+
+  const handleRegenerateSalt = useCallback(() => {
+    setSalt(generateRandomSaltHex());
+    setSaltAuto(true);
+  }, []);
+
   const handleChangeP = useCallback((newP: number) => {
     setP(newP);
     setM((prevM) => {
@@ -115,8 +133,10 @@ export default function App() {
       <Header
         password={password}
         salt={salt}
-        onPasswordChange={setPassword}
-        onSaltChange={setSalt}
+        saltAuto={saltAuto}
+        onPasswordChange={handlePasswordChange}
+        onSaltChange={handleSaltChange}
+        onRegenerateSalt={handleRegenerateSalt}
         elapsedMs={elapsedMs}
         totalMs={totalSimMs}
         isPlaying={isPlaying}
@@ -156,9 +176,11 @@ export default function App() {
         m={m}
         t={t}
         p={p}
+        tagLength={tagLength}
         onChangeM={setM}
         onChangeT={setT}
         onChangeP={handleChangeP}
+        onChangeTagLength={setTagLength}
         layout={layout}
         isPlaying={isPlaying}
         onPlay={play}

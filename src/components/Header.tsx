@@ -1,4 +1,4 @@
-import { KeyRound, ShieldHalf } from 'lucide-react';
+import { Dices, KeyRound, ShieldHalf } from 'lucide-react';
 import type { CSSProperties, ReactNode } from 'react';
 import { ThemeToggle } from './ThemeToggle.tsx';
 import { Timer } from './Timer.tsx';
@@ -6,8 +6,10 @@ import { Timer } from './Timer.tsx';
 interface HeaderProps {
   password: string;
   salt: string;
+  saltAuto: boolean;
   onPasswordChange: (v: string) => void;
   onSaltChange: (v: string) => void;
+  onRegenerateSalt: () => void;
   elapsedMs: number;
   totalMs: number;
   isPlaying: boolean;
@@ -16,7 +18,8 @@ interface HeaderProps {
 }
 
 export function Header({
-  password, salt, onPasswordChange, onSaltChange, elapsedMs, totalMs, isPlaying, theme, onToggleTheme,
+  password, salt, saltAuto, onPasswordChange, onSaltChange, onRegenerateSalt,
+  elapsedMs, totalMs, isPlaying, theme, onToggleTheme,
 }: HeaderProps) {
   return (
     <header className="flex items-center gap-6 border-b border-edge px-6 py-4">
@@ -39,6 +42,19 @@ export function Header({
           onChange={onSaltChange}
           icon={<span className="text-[17px] font-semibold leading-none">#</span>}
           accent="salt"
+          trailing={
+            <div className="flex shrink-0 items-center gap-2">
+              {saltAuto && <span className="text-sm text-ink-muted">auto</span>}
+              <button
+                type="button"
+                onClick={onRegenerateSalt}
+                title="Générer un nouveau sel aléatoire"
+                className="rounded-lg p-1.5 text-ink-muted transition-colors hover:bg-surface-2 hover:text-salt"
+              >
+                <Dices size={18} />
+              </button>
+            </div>
+          }
         />
       </div>
 
@@ -49,9 +65,9 @@ export function Header({
 }
 
 function Field({
-  label, value, onChange, icon, accent,
+  label, value, onChange, icon, accent, trailing,
 }: {
-  label: string; value: string; onChange: (v: string) => void; icon: ReactNode; accent: 'pass' | 'salt';
+  label: string; value: string; onChange: (v: string) => void; icon: ReactNode; accent: 'pass' | 'salt'; trailing?: ReactNode;
 }) {
   return (
     <label className="flex min-w-0 flex-1 items-center gap-3 rounded-xl border border-edge bg-surface px-4 py-2.5 transition-colors focus-within:border-[--c] has-[input:focus]:border-[--c]"
@@ -67,6 +83,7 @@ function Field({
         placeholder="vide autorisé"
         className="w-full min-w-0 bg-transparent font-mono text-lg text-ink placeholder:text-ink-muted/50 focus:outline-none"
       />
+      {trailing}
     </label>
   );
 }

@@ -8,9 +8,11 @@ interface ParamControlsProps {
   m: number;
   t: number;
   p: number;
+  tagLength: 32 | 64;
   onChangeM: (v: number) => void;
   onChangeT: (v: number) => void;
   onChangeP: (v: number) => void;
+  onChangeTagLength: (v: 32 | 64) => void;
   layout: Argon2Layout;
   isPlaying: boolean;
   onPlay: () => void;
@@ -56,7 +58,7 @@ function Slider({
 }
 
 export function ParamControls({
-  m, t, p, onChangeM, onChangeT, onChangeP, layout,
+  m, t, p, tagLength, onChangeM, onChangeT, onChangeP, onChangeTagLength, layout,
   isPlaying, onPlay, onPause, onStepForward, onStepBack, onReset,
   speed, onSpeedChange, stepIndex, totalSteps,
 }: ParamControlsProps) {
@@ -69,6 +71,25 @@ export function ParamControls({
         <Slider label="Mémoire (m)" value={m} min={mMin} max={M_MAX} step={mStep} onChange={onChangeM} accent="var(--pass)" suffix=" Ko" />
         <Slider label="Itérations (t)" value={t} min={1} max={T_MAX} step={1} onChange={onChangeT} accent="var(--signal)" suffix="" />
         <Slider label="Parallélisme (p)" value={p} min={1} max={P_MAX} step={1} onChange={onChangeP} accent="var(--ref)" suffix="" />
+
+        <div className="shrink-0">
+          <p className="mb-2 text-sm font-medium text-ink-muted">Sortie</p>
+          <div className="flex items-center gap-0.5 rounded-full border border-edge p-1">
+            {([32, 64] as const).map((len) => (
+              <button
+                key={len}
+                type="button"
+                onClick={() => onChangeTagLength(len)}
+                className={`rounded-full px-3 py-1.5 font-mono text-sm transition-colors ${
+                  tagLength === len ? 'bg-ink text-bg' : 'text-ink-muted hover:text-ink'
+                }`}
+              >
+                {len} o
+              </button>
+            ))}
+          </div>
+        </div>
+
         <p className="hidden shrink-0 font-mono text-sm text-ink-muted lg:block">grille {p}×{layout.laneLength}</p>
       </div>
 
