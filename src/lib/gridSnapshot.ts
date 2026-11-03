@@ -1,6 +1,6 @@
 import { toHex, type TraceStep } from './argon2.ts';
 
-export type CellState = 'empty' | 'computing' | 'reference' | 'filled';
+export type CellState = 'empty' | 'computing' | 'previous' | 'reference' | 'filled';
 
 export interface Cell {
   state: CellState;
@@ -39,6 +39,10 @@ export function computeGridSnapshot(
         ...cells[current.lane][current.col],
         state: 'computing',
       };
+    }
+    if (current.kind === 'fill' && current.lane !== undefined && current.col !== undefined) {
+      const prevCol = current.col === 0 ? q - 1 : current.col - 1;
+      cells[current.lane][prevCol] = { ...cells[current.lane][prevCol], state: 'previous' };
     }
     if (current.kind === 'fill' && current.ref) {
       const { lane, col } = current.ref;

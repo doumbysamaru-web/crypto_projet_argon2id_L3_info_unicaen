@@ -4,6 +4,7 @@ import type { Cell, GridSnapshot } from '../lib/gridSnapshot.ts';
 const STATE_CLASSES: Record<Cell['state'], string> = {
   empty: 'bg-surface-2',
   computing: 'bg-warn',
+  previous: 'bg-prev',
   reference: 'bg-ref',
   filled: 'bg-signal',
 };
@@ -55,6 +56,7 @@ export function MemoryGrid({
       <div className="flex items-center gap-6 text-sm text-ink-muted">
         <Legend swatch="bg-surface-2" label="Vide" />
         <Legend swatch="bg-warn" label="Calcul" />
+        <Legend swatch="bg-prev" label="Précédent" />
         <Legend swatch="bg-ref" label="Référence" />
         <Legend swatch="bg-signal" label="Rempli" />
         <span className="ml-auto font-mono">{p} × {q} blocs</span>

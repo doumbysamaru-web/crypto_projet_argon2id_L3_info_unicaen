@@ -1,9 +1,10 @@
+import type { ReactNode } from 'react';
 import type { Argon2Layout, TraceStep } from '../lib/argon2.ts';
 import { toHex } from '../lib/argon2.ts';
 import { AvalancheAlert } from './AvalancheAlert.tsx';
 import { Highlight } from './Highlight.tsx';
 
-function Formula({ children }: { children: string }) {
+function Formula({ children }: { children: ReactNode }) {
   return (
     <p className="overflow-x-auto whitespace-pre font-mono text-base leading-relaxed text-ink">
       {children}
@@ -90,6 +91,7 @@ function StepContent({
 
   if (step.kind === 'fill') {
     const modeIsI = step.addressing === 'i';
+    const prevCol = step.col === 0 ? layout.laneLength - 1 : step.col! - 1;
     return (
       <div className="space-y-4">
         <Eyebrow>{eyebrow}</Eyebrow>
@@ -100,8 +102,16 @@ function StepContent({
           {modeIsI ? 'Argon2i — déterministe' : 'Argon2d — dépend des données'}
         </Highlight>
         <Formula>
-          {`B[i][j] = G( B[i][j-1], B[l][z] )${step.pass! > 0 ? ' ⊕ ancien' : ''}`}
+          {`B[${step.lane}][${step.col}] = G( `}
+          <span className="font-semibold text-prev">B[{step.lane}][{prevCol}]</span>
+          {', '}
+          <span className="font-semibold text-ref">B[{step.ref!.lane}][{step.ref!.col}]</span>
+          {` )${step.pass! > 0 ? ' ⊕ ancien' : ''}`}
         </Formula>
+        <p className="text-base text-ink-muted">
+          <span className="font-medium text-prev">Précédent</span> : le bloc juste avant dans la même lane.{' '}
+          <span className="font-medium text-ref">Référence</span> : un bloc pseudo-aléatoire déjà calculé.
+        </p>
         <p className="text-base text-ink-muted">
           G mélange ses deux blocs avec la même construction « quart de tour » (ARX) que ChaCha20.
         </p>

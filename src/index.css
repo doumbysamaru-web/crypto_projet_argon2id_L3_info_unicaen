@@ -34,6 +34,7 @@
   --color-signal: var(--signal);
   --color-warn: var(--warn);
   --color-ref: var(--ref);
+  --color-prev: var(--prev);
   --color-danger: var(--danger);
 }
 
@@ -52,6 +53,7 @@
   --signal: #4ade9a;
   --warn: #f0b03e;
   --ref: #b294f5;
+  --prev: #52adff;
   --danger: #fb7185;
 }
 
@@ -70,6 +72,7 @@
   --signal: #0d8f5c;
   --warn: #b6710a;
   --ref: #6d3fd1;
+  --prev: #0a78d1;
   --danger: #d9364f;
 }
 
@@ -89,6 +92,7 @@
     --signal: #0d8f5c;
     --warn: #b6710a;
     --ref: #6d3fd1;
+    --prev: #0a78d1;
     --danger: #d9364f;
   }
 }

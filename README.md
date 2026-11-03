@@ -15,6 +15,41 @@ l'interface (H0, blocs dérivés, tag final...) sont donc de vraies valeurs
 calculées à partir du mot de passe et du sel saisis, pas des données
 factices.
 
+![Aperçu en thème sombre](docs/apercu-sombre.png)
+
+<details>
+<summary>Aperçu en thème clair</summary>
+
+![Aperçu en thème clair](docs/apercu-clair.png)
+
+</details>
+
+## Fonctionnalités
+
+- **Matrice mémoire animée** : une ligne par lane (`p`), les colonnes
+  dérivées de `m`. À chaque étape, les deux entrées de la fonction G sont
+  colorées :
+
+  | Couleur | Signification |
+  |---|---|
+  | Orange | bloc en cours de calcul `B[i][j]` |
+  | Bleu | bloc **précédent** `B[i][j-1]` (même lane) |
+  | Violet | bloc de **référence** `B[l][z]` choisi par l'adressage |
+  | Vert | bloc déjà rempli |
+
+- **Panneau pédagogique** : formule de l'étape avec les vraies coordonnées
+  (`B[3][9] = G( B[3][8], B[3][1] )`), mode d'adressage Argon2i
+  (déterministe) ou Argon2d (dépendant des données), valeur réelle en hex.
+- **Sel automatique** : un sel aléatoire de 16 octets est régénéré à chaque
+  changement de mot de passe ; il reste éditable à la main (bouton dé pour
+  revenir en mode auto).
+- **Taille de sortie** : tag final de 32 ou 64 octets.
+- **Effet avalanche** : modifier une seule lettre change tous les blocs
+  dérivés, et l'interface le montre en direct.
+- **Comparaison** avec SHA-256 / SHA-3 (temps et mémoire, estimation
+  pédagogique).
+- **Thème clair / sombre** commutable.
+
 ## Lancer le projet
 
 ```bash
@@ -36,8 +71,10 @@ npm test           # vérifie l'implémentation contre le vecteur de test RFC 91
 ## Stack technique
 
 - React 19 + TypeScript + Vite
-- Tailwind CSS v4 (thème « cybersécurité »)
+- Tailwind CSS v4, thème clair/sombre via variables CSS
+- Police [Geist](https://vercel.com/font) (auto-hébergée dans `public/fonts/`)
 - [lucide-react](https://lucide.dev/) pour les icônes
+- Déployé sur Vercel depuis la branche `main`
 - Aucune dépendance cryptographique externe : BLAKE2b et Argon2id sont
   implémentés à la main dans `src/lib/`
 
@@ -79,6 +116,4 @@ précalculé une seule fois par `useArgon2Trace`.
 - Le chronomètre affiché pendant la lecture est une **estimation
   pédagogique** (clairement indiquée comme telle dans l'interface), calibrée
   pour rester lisible sur un écran quel que soit le nombre d'étapes — ce
-  n'est pas une mesure de temps réel. Le temps de calcul réel effectué par ce
-  navigateur (précalcul de toute la trace) est affiché séparément, au-dessus
-  de la grille.
+  n'est pas une mesure de temps réel.
